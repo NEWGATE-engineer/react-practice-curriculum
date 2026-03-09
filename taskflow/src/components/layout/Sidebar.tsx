@@ -1,5 +1,5 @@
 // サイドバー
-
+// 型定義。最後にある[]でitemsの中のオブジェクトの配列という意味
 type SidebarProps = {
   items: {
     label: string;

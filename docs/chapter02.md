@@ -335,7 +335,7 @@ export function TaskAddForm({ onAdd }: TaskAddFormProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!title.trim()) return;
 
