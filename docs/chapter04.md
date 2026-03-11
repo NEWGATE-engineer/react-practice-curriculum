@@ -10,6 +10,19 @@
 ダッシュボード、タスク一覧、タスク詳細、プロジェクト一覧の各ページが
 URLで切り替わるSPAを構築する。
 
+## 作業順序
+
+1. `react-router-dom` をインストール（4-1）
+2. `src/components/feedback/NotFoundPage.tsx` 作成 — 404ページ（依存なし）（4-6）
+3. `src/features/dashboard/components/DashboardPage.tsx` 作成 — ダッシュボードページ（依存なし）
+4. `src/features/tasks/components/TaskDetailPage.tsx` 作成 — タスク詳細ページ（依存なし）（4-4）
+5. `src/features/projects/components/ProjectListPage.tsx` 作成 — プロジェクト一覧ページ（依存なし）
+6. `src/components/layout/Sidebar.tsx` 更新 — `<a>` を `<NavLink>` に変更（4-3）
+7. `src/components/layout/RootLayout.tsx` 作成 — Outlet使用 ※Header, Sidebarに依存（4-2）
+8. `src/features/tasks/components/TaskLayout.tsx` 作成 — タスク共通レイアウト（4-5）
+9. `src/app/router.tsx` 作成 — ルーティング定義 ※上記すべてのページ・レイアウトに依存（4-2）
+10. `src/app/App.tsx` 更新 — `RouterProvider` に変更 ※router.tsxに依存（4-2）
+
 ---
 
 ## 4-1. SPAとルーティング

@@ -10,6 +10,19 @@
 ## 完成イメージ
 TaskFlowアプリが品質の高い状態でデプロイ可能になる。
 
+## 作業順序
+
+1. `src/components/feedback/ErrorBoundary.tsx` 作成 — Error Boundary（依存なし）（12-1）
+2. `src/app/App.tsx` 更新 — ErrorBoundaryでアプリ全体を囲む ※ErrorBoundaryに依存（12-1）
+3. `src/lib/api-client.ts` 更新 — レスポンスインターセプターにエラーハンドリングを追加（12-1）
+4. `eslint`, `prettier`, `eslint-config-prettier` 等の設定を確認・調整（12-2）
+5. `husky`, `lint-staged` をインストール＆設定 — pre-commitフック（12-2）
+6. `.env` / `.env.example` 作成 — 環境変数の設定（12-3）
+7. `package.json` 更新 — lint:fix, format, typecheck 等のスクリプト追加（12-2）
+8. `npm run build` でビルド確認（12-4）
+9. `rollup-plugin-visualizer` でバンドルサイズ分析（12-4）
+10. Vercel または Netlify にデプロイ（12-5）
+
 ---
 
 ## 12-1. エラーハンドリング

@@ -10,6 +10,17 @@
 ## 完成イメージ
 TaskFlowアプリが高速に動作し、大量のタスクでもスムーズに操作できる状態。
 
+## 作業順序
+
+1. `src/features/tasks/components/TaskCard.tsx` 更新 — React.memoでメモ化（9-2）
+2. `src/features/tasks/components/TaskListPage.tsx` 更新 — useCallbackとReact.memoの組み合わせ（9-2）
+3. `src/features/tasks/components/TaskListSkeleton.tsx` 作成 — スケルトンUI（依存なし）（9-4）
+4. `src/components/feedback/PageLoading.tsx` 作成 — 共通ローディングUI（依存なし）（9-3）
+5. `src/app/router.tsx` 更新 — lazy + Suspenseでコード分割 ※PageLoadingに依存（9-3）
+6. `@tanstack/react-virtual` をインストール（9-6）
+7. `src/features/tasks/components/VirtualTaskList.tsx` 作成 — 仮想スクロール対応（9-6）
+8. React DevToolsのProfilerでパフォーマンス計測・確認（9-7）
+
 ---
 
 ## 9-1. 再レンダリングの仕組みを理解する

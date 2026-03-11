@@ -9,6 +9,20 @@
 ## 完成イメージ
 TaskFlowアプリのトップページ（静的な画面）を作成します。
 
+## 作業順序
+
+1. Viteでプロジェクト作成・不要ファイル削除・ディレクトリ構成を整理（1-1）
+2. Tailwind CSS導入 → `src/styles/globals.css` 作成（1-1）
+3. `vite.config.ts` 更新（Tailwind + パスエイリアス）（1-1）
+4. `tsconfig.app.json` 更新（パスエイリアス）（1-1）
+5. `src/main.tsx` 更新（globals.css読み込み）（1-4）
+6. `src/components/ui/Button.tsx` 作成（1-3）
+7. `src/components/layout/Header.tsx` 作成（1-4）
+8. `src/components/layout/Sidebar.tsx` 作成（1-4）
+9. `src/components/layout/MainLayout.tsx` 作成 ※Header, Sidebarに依存（1-4）
+10. `src/app/App.tsx` 作成 ※MainLayoutに依存（1-4）
+11. ESLint + Prettier 設定（1-5）
+
 ---
 
 ## 1-1. プロジェクト作成
