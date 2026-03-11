@@ -9,6 +9,16 @@
 ## 完成イメージ
 タスク作成・編集フォームがバリデーション付きで動作する。
 
+## 作業順序
+
+1. `react-hook-form`, `zod`, `@hookform/resolvers` をインストール（5-1）
+2. `src/features/tasks/types/schema.ts` 作成 — Zodスキーマと型定義（依存なし）（5-3）
+3. `src/components/ui/FormField.tsx` 作成 — 汎用フォームフィールド（依存なし）（5-4）
+4. `src/components/ui/Input.tsx` 作成 — 汎用Inputコンポーネント（依存なし）（5-4）
+5. `src/features/tasks/components/TaskCreateForm.tsx` 作成 ※schema, FormField, Inputに依存（5-2, 5-3）
+6. `src/features/tasks/components/TaskEditForm.tsx` 作成 ※schema, FormField, Inputに依存（5-5）
+7. 既存ページコンポーネントにフォームを統合
+
 ---
 
 ## 5-1. なぜReact Hook Form？

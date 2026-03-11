@@ -9,6 +9,15 @@
 ## 完成イメージ
 タスクのフィルタリング・検索機能、タスク詳細モーダルを追加する。
 
+## 作業順序
+
+1. `src/components/ui/Modal.tsx` 作成 — 共通モーダルコンポーネント（依存なし）（3-4）
+2. `src/features/tasks/components/TaskSearchBar.tsx` 作成（依存なし）（3-4）
+3. `src/features/tasks/components/TaskFilterTabs.tsx` 作成 ※型定義（第2章）に依存（3-4）
+4. `src/features/tasks/components/TaskDetailModal.tsx` 作成 ※Modal, 型定義に依存（3-4）
+5. `src/hooks/useLocalStorage.ts` 作成 — カスタムフック（依存なし）（3-5）
+6. `src/features/tasks/components/TaskListPage.tsx` 更新 — 検索・フィルタ・モーダル・ローカルストレージ保存を統合 ※上記すべてに依存
+
 ---
 
 ## 3-1. useEffect — 副作用の管理
