@@ -9,6 +9,21 @@
 ## 完成イメージ
 タスクのCRUD操作がAPIを通じて動作する。読み込み中・エラー状態の表示も含む。
 
+## 作業順序
+
+1. `axios` をインストール（6-2）
+2. `src/lib/api-client.ts` 作成 — Axiosインスタンス + インターセプター（依存なし）（6-2）
+3. `src/features/tasks/types/index.ts` 更新 — Task型にpriority, dueDateを追加（依存なし）
+4. `src/mocks/tasks.ts` 作成 — モックデータとモックAPI関数 ※型定義に依存（6-3）
+5. `@tanstack/react-query`, `@tanstack/react-query-devtools` をインストール（6-4）
+6. `src/lib/query-client.ts` 作成 — QueryClient設定（依存なし）（6-4）
+7. `src/app/providers.tsx` 作成 — QueryClientProvider ※query-clientに依存（6-4）
+8. `src/app/App.tsx` 更新 — Providersで囲む ※providers.tsxに依存（6-4）
+9. `src/features/tasks/api/task-queries.ts` 作成 — useQuery フック ※モックAPIに依存（6-5）
+10. `src/features/tasks/api/task-mutations.ts` 作成 — useMutation フック ※モックAPI, queryKeysに依存（6-6）
+11. `src/features/tasks/components/TaskListPage.tsx` 更新 — useQueryでデータ取得に切り替え（6-5）
+12. `src/features/tasks/api/task-api.ts` 作成 — 本番API関数（将来のLaravel連携用）（6-8）
+
 ---
 
 ## 6-1. フロントエンドとバックエンドの分離
