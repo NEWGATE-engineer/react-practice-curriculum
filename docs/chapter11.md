@@ -9,6 +9,21 @@
 ## 完成イメージ
 主要なコンポーネント・フック・ユーティリティにテストが書かれた状態。
 
+## 作業順序
+
+1. `vitest`, `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event`, `jsdom` をインストール（11-2）
+2. `vite.config.ts` 更新 — test設定を追加（11-2）
+3. `src/test/setup.ts` 作成 — テストセットアップ（依存なし）（11-2）
+4. `tsconfig.app.json` 更新 — テスト用の型追加（11-2）
+5. `package.json` 更新 — test系スクリプト追加（11-2）
+6. `src/utils/format-date.ts` 作成 — テスト対象のユーティリティ（依存なし）（11-3）
+7. `src/utils/__tests__/format-date.test.ts` 作成 — ユニットテスト ※format-dateに依存（11-3）
+8. `src/components/ui/__tests__/Button.test.tsx` 作成 — コンポーネントテスト（11-4）
+9. `src/features/tasks/components/__tests__/TaskCard.test.tsx` 作成（11-4）
+10. `src/features/tasks/components/__tests__/TaskCreateForm.test.tsx` 作成（11-5）
+11. `src/hooks/__tests__/useDebounce.test.ts` 作成 — カスタムフックテスト（11-6）
+12. `src/test/test-utils.tsx` 作成 — テストヘルパー（renderWithProviders）（11-7）
+
 ---
 
 ## 11-1. テストの種類と戦略

@@ -9,6 +9,19 @@
 ## 完成イメージ
 テーマ切り替え、サイドバー開閉、トースト通知をグローバル状態で管理する。
 
+## 作業順序
+
+1. `zustand` をインストール（7-4）
+2. `src/contexts/ThemeContext.tsx` 作成 — useContext の学習用（依存なし）（7-2）
+3. `src/features/tasks/stores/task-filter-store.ts` 作成 — Zustandストア（依存なし）（7-4）
+4. `src/stores/ui-store.ts` 作成 — サイドバー開閉状態（依存なし）（7-5）
+5. `src/stores/toast-store.ts` 作成 — トースト通知ストア（依存なし）（7-5）
+6. `src/components/feedback/ToastContainer.tsx` 作成 ※toast-storeに依存（7-5）
+7. `src/components/layout/Sidebar.tsx` 更新 — useUIStoreで開閉管理 ※ui-storeに依存
+8. `src/components/layout/RootLayout.tsx` 更新 — ToastContainerを配置 ※ToastContainerに依存
+9. `src/features/tasks/components/TaskFilterTabs.tsx` 更新 — Zustandストアに切り替え ※task-filter-storeに依存
+10. `src/stores/settings-store.ts` 作成 — persist ミドルウェアでテーマ永続化（7-6）
+
 ---
 
 ## 7-1. 状態の種類を整理する
