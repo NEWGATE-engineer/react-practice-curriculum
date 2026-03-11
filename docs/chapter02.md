@@ -9,6 +9,14 @@
 ## 完成イメージ
 タスク一覧画面で、タスクの表示・追加・ステータス切り替えができる状態。
 
+## 作業順序
+
+1. `src/features/tasks/types/index.ts` 作成 — 型定義（依存なし）（2-5）
+2. `src/features/tasks/components/TaskCard.tsx` 作成 ※型定義に依存（2-5）
+3. `src/features/tasks/components/TaskAddForm.tsx` 作成 ※Button（第1章）に依存（2-5）
+4. `src/features/tasks/components/TaskListPage.tsx` 作成 ※TaskCard, TaskAddForm, 型定義に依存（2-5）
+5. `src/app/App.tsx` 更新 — MainLayoutの中でTaskListPageを表示するように変更
+
 ---
 
 ## 2-1. useState — Reactの状態管理の基本

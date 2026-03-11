@@ -8,6 +8,16 @@
 ## 完成イメージ
 アプリ全体のロジックがカスタムフックに適切に分離された状態。
 
+## 作業順序
+
+1. `src/features/tasks/hooks/useTaskListWithFilter.ts` 作成 — useMemoでフィルタ統合フック（8-2, 8-10）
+2. `src/features/tasks/hooks/useTaskActions.ts` 作成 — useCallbackでアクション関数をメモ化（8-3）
+3. `src/components/ui/FormField.tsx` 更新 — useIdでアクセシブルなID生成（8-4）
+4. `src/features/tasks/components/TaskSearchPage.tsx` 更新 — useDeferredValueで検索遅延対策（8-5）
+5. `src/hooks/useMediaQuery.ts` 作成 — レスポンシブ対応カスタムフック（8-10）
+6. `src/hooks/useDebounce.ts` 作成 — デバウンスカスタムフック（8-10）
+7. 各ページコンポーネントをリファクタリング — ロジックをカスタムフックに抽出
+
 ---
 
 ## 8-1. use系Hook一覧（React 18 + 19）

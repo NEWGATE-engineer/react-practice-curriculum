@@ -9,6 +9,19 @@
 ## 完成イメージ
 ログイン/登録画面、認証済みユーザーのみアクセス可能なルートが動作する。
 
+## 作業順序
+
+1. `src/features/auth/types/index.ts` 作成 — 認証関連の型定義（依存なし）（10-2）
+2. `src/features/auth/stores/auth-store.ts` 作成 — Zustand + persistで認証状態管理 ※型定義に依存（10-3）
+3. `src/features/auth/api/auth-api.ts` 作成 — モック認証API ※型定義に依存（10-4）
+4. `src/features/auth/hooks/useAuth.ts` 作成 — ログイン/登録/ログアウト用Mutationフック ※auth-api, auth-storeに依存（10-4）
+5. `src/features/auth/components/LoginForm.tsx` 作成 ※useAuth, FormField, Inputに依存（10-5）
+6. `src/features/auth/components/RegisterForm.tsx` 作成 ※useAuth, FormField, Inputに依存
+7. `src/features/auth/components/ProtectedRoute.tsx` 作成 ※auth-storeに依存（10-6）
+8. `src/features/auth/components/GuestRoute.tsx` 作成 ※auth-storeに依存（10-6）
+9. `src/app/router.tsx` 更新 — ProtectedRoute/GuestRouteでルートを分離 ※上記すべてに依存（10-6）
+10. `src/components/layout/Header.tsx` 更新 — ユーザー名とログアウトボタンを表示 ※auth-store, useAuthに依存（10-7）
+
 ---
 
 ## 10-1. 認証フローの全体像
