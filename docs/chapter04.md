@@ -51,6 +51,53 @@ npm install react-router-dom
 
 ## 4-2. 基本的なルーティング設定
 
+### ページコンポーネントの作成
+
+ルーターで使うページコンポーネントを先に作成しておきます。
+
+```tsx
+// src/features/dashboard/components/DashboardPage.tsx
+// 第1章のApp.tsxに書いていたダッシュボードUIを独立したページコンポーネントに抽出
+export function DashboardPage() {
+  return (
+    <div>
+      <h2 className="text-2xl font-bold text-gray-900 mb-4">ダッシュボード</h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <p className="text-sm text-gray-500">未完了タスク</p>
+          <p className="text-3xl font-bold text-gray-900 mt-1">12</p>
+        </div>
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <p className="text-sm text-gray-500">進行中</p>
+          <p className="text-3xl font-bold text-blue-600 mt-1">5</p>
+        </div>
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <p className="text-sm text-gray-500">完了</p>
+          <p className="text-3xl font-bold text-green-600 mt-1">24</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+```tsx
+// src/features/projects/components/ProjectListPage.tsx
+// プロジェクト一覧ページ（この時点ではプレースホルダー）
+export function ProjectListPage() {
+  return (
+    <div>
+      <h2 className="text-2xl font-bold text-gray-900 mb-4">プロジェクト一覧</h2>
+      <p className="text-gray-500">プロジェクト機能は今後の章で実装します。</p>
+    </div>
+  );
+}
+```
+
+> **ポイント:** 第1章ではApp.tsxにダッシュボードのUIを直接書いていましたが、
+> ルーティング導入に伴い、各ページを独立したコンポーネントに分離します。
+> これはLaravelでルートごとにControllerとViewを分けるのと同じ考え方です。
+
 ### ルーター定義
 
 ```tsx
