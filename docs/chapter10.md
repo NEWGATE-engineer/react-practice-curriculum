@@ -331,6 +331,89 @@ export function LoginForm() {
 }
 ```
 
+### ユーザー登録フォーム
+
+LoginFormとほぼ同じ構成で、名前とパスワード確認フィールドを追加します:
+
+```tsx
+// src/features/auth/components/RegisterForm.tsx
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Link } from 'react-router-dom';
+import { useRegister } from '../hooks/useAuth';
+import { FormField } from '@/components/ui/FormField';
+import { Input } from '@/components/ui/Input';
+import { Button } from '@/components/ui/Button';
+
+const registerSchema = z.object({
+  name: z.string().min(1, '名前は必須です'),
+  email: z.string().email('有効なメールアドレスを入力してください'),
+  password: z.string().min(8, 'パスワードは8文字以上です'),
+  passwordConfirmation: z.string().min(8, 'パスワード確認は必須です'),
+}).refine(data => data.password === data.passwordConfirmation, {
+  message: 'パスワードが一致しません',
+  path: ['passwordConfirmation'],
+});
+
+type RegisterFormData = z.infer<typeof registerSchema>;
+
+export function RegisterForm() {
+  const register_ = useRegister();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
+  });
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
+        <h1 className="text-2xl font-bold text-center mb-6">アカウント作成</h1>
+
+        <form
+          onSubmit={handleSubmit((data) => register_.mutate(data))}
+          className="space-y-4"
+        >
+          <FormField label="名前" error={errors.name}>
+            <Input {...register('name')} hasError={!!errors.name} />
+          </FormField>
+
+          <FormField label="メールアドレス" error={errors.email}>
+            <Input type="email" {...register('email')} hasError={!!errors.email} />
+          </FormField>
+
+          <FormField label="パスワード" error={errors.password}>
+            <Input type="password" {...register('password')} hasError={!!errors.password} />
+          </FormField>
+
+          <FormField label="パスワード確認" error={errors.passwordConfirmation}>
+            <Input
+              type="password"
+              {...register('passwordConfirmation')}
+              hasError={!!errors.passwordConfirmation}
+            />
+          </FormField>
+
+          <Button variant="primary" disabled={register_.isPending}>
+            {register_.isPending ? '登録中...' : 'アカウントを作成'}
+          </Button>
+        </form>
+
+        <p className="text-center text-sm text-gray-500 mt-4">
+          すでにアカウントをお持ちの方は
+          <Link to="/login" className="text-blue-600 hover:underline ml-1">
+            ログイン
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
+}
+```
+
 ---
 
 ## 10-6. Protected Route（ルートガード）
