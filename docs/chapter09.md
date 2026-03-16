@@ -114,26 +114,36 @@ function TaskListPage() {
 
 ## 9-3. コード分割（Code Splitting）
 
-### lazy + Suspense
+### PageLoadingコンポーネントの作成
+
+まず共通ローディングUIを独立したファイルとして作成します:
 
 ```tsx
-// src/app/router.tsx
-import { lazy, Suspense } from 'react';
-
-// lazy: コンポーネントを動的にインポート（必要な時にだけ読み込み）
-const DashboardPage = lazy(() => import('@/features/dashboard/components/DashboardPage'));
-const TaskListPage = lazy(() => import('@/features/tasks/components/TaskListPage'));
-const TaskDetailPage = lazy(() => import('@/features/tasks/components/TaskDetailPage'));
-const ProjectListPage = lazy(() => import('@/features/projects/components/ProjectListPage'));
-
-// ローディングUI
-function PageLoading() {
+// src/components/feedback/PageLoading.tsx
+export function PageLoading() {
   return (
     <div className="flex items-center justify-center py-20">
       <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full" />
     </div>
   );
 }
+```
+
+### lazy + Suspense でルーターを更新
+
+```tsx
+// src/app/router.tsx（更新）
+import { lazy, Suspense } from 'react';
+import { createBrowserRouter } from 'react-router-dom';
+import { RootLayout } from '@/components/layout/RootLayout';
+import { PageLoading } from '@/components/feedback/PageLoading';
+import { NotFoundPage } from '@/components/feedback/NotFoundPage';
+
+// lazy: コンポーネントを動的にインポート（必要な時にだけ読み込み）
+const DashboardPage = lazy(() => import('@/features/dashboard/components/DashboardPage'));
+const TaskListPage = lazy(() => import('@/features/tasks/components/TaskListPage'));
+const TaskDetailPage = lazy(() => import('@/features/tasks/components/TaskDetailPage'));
+const ProjectListPage = lazy(() => import('@/features/projects/components/ProjectListPage'));
 
 export const router = createBrowserRouter([
   {
@@ -156,11 +166,35 @@ export const router = createBrowserRouter([
           </Suspense>
         ),
       },
-      // ...
+      {
+        path: 'tasks/:taskId',
+        element: (
+          <Suspense fallback={<PageLoading />}>
+            <TaskDetailPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: 'projects',
+        element: (
+          <Suspense fallback={<PageLoading />}>
+            <ProjectListPage />
+          </Suspense>
+        ),
+      },
+      { path: '*', element: <NotFoundPage /> },
     ],
   },
 ]);
 ```
+
+> **注意:** lazyで動的インポートするコンポーネントは `export default` が必要です。
+> 既存のコンポーネントが named export の場合は、以下のようにラップします:
+> ```tsx
+> const DashboardPage = lazy(() =>
+>   import('@/features/dashboard/components/DashboardPage').then(m => ({ default: m.DashboardPage }))
+> );
+> ```
 
 > **Laravelとの対比:**
 > LaravelのBladeでは全ページのHTMLが毎回サーバーから返されますが、

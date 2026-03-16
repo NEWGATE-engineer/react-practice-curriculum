@@ -410,6 +410,10 @@ export function ToastContainer() {
 ### API操作とトーストの連携
 
 ```tsx
+import { useCreateTask } from '@/features/tasks/api/task-mutations';
+import { useToastStore } from '@/stores/toast-store';
+import type { Task } from '@/features/tasks/types';
+
 // タスク作成時にトースト通知を出す
 function useCreateTaskWithToast() {
   const createTask = useCreateTask();
@@ -417,7 +421,7 @@ function useCreateTaskWithToast() {
 
   return {
     ...createTask,
-    mutate: (data: CreateTaskData) => {
+    mutate: (data: Omit<Task, 'id' | 'createdAt'>) => {
       createTask.mutate(data, {
         onSuccess: () => addToast('タスクを作成しました', 'success'),
         onError: () => addToast('タスクの作成に失敗しました', 'error'),
@@ -427,22 +431,154 @@ function useCreateTaskWithToast() {
 }
 ```
 
+### Sidebarの更新（useUIStoreで開閉管理）
+
+第4章で作成したSidebarに、Zustandストアでの開閉管理を追加します:
+
+```tsx
+// src/components/layout/Sidebar.tsx（更新）
+import { NavLink } from 'react-router-dom';
+import { useUIStore } from '@/stores/ui-store';
+
+const navItems = [
+  { label: 'ダッシュボード', to: '/' },
+  { label: 'タスク', to: '/tasks' },
+  { label: 'プロジェクト', to: '/projects' },
+];
+
+export function Sidebar() {
+  const isSidebarOpen = useUIStore(state => state.isSidebarOpen);
+
+  if (!isSidebarOpen) return null;
+
+  return (
+    <aside className="w-64 bg-gray-50 border-r border-gray-200 p-4">
+      <nav>
+        <ul className="space-y-1">
+          {navItems.map((item) => (
+            <li key={item.to}>
+              <NavLink
+                to={item.to}
+                end={item.to === '/'}
+                className={({ isActive }) =>
+                  `block px-3 py-2 rounded-md text-sm transition-colors ${
+                    isActive
+                      ? 'bg-blue-50 text-blue-700 font-medium'
+                      : 'text-gray-700 hover:bg-gray-200'
+                  }`
+                }
+              >
+                {item.label}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </aside>
+  );
+}
+```
+
+### RootLayoutの更新（ToastContainerを配置）
+
+```tsx
+// src/components/layout/RootLayout.tsx（更新）
+import { Outlet } from 'react-router-dom';
+import { Header } from './Header';
+import { Sidebar } from './Sidebar';
+import { ToastContainer } from '@/components/feedback/ToastContainer';
+
+export function RootLayout() {
+  return (
+    <div className="flex h-screen flex-col">
+      <Header />
+      <div className="flex flex-1 overflow-hidden">
+        <Sidebar />
+        <main className="flex-1 overflow-y-auto p-6">
+          <Outlet />
+        </main>
+      </div>
+      <ToastContainer />
+    </div>
+  );
+}
+```
+
+### TaskFilterTabsの更新（Zustandストアに切り替え）
+
+第3章のprops経由から、Zustandストアで直接状態管理するように変更します:
+
+```tsx
+// src/features/tasks/components/TaskFilterTabs.tsx（更新）
+import { useTaskFilterStore } from '../stores/task-filter-store';
+import type { TaskStatus } from '../types';
+
+type FilterOption = TaskStatus | 'all';
+
+const filterOptions: { value: FilterOption; label: string }[] = [
+  { value: 'all', label: 'すべて' },
+  { value: 'todo', label: '未着手' },
+  { value: 'in_progress', label: '進行中' },
+  { value: 'done', label: '完了' },
+];
+
+type TaskFilterTabsProps = {
+  counts: Record<FilterOption, number>;
+};
+
+export function TaskFilterTabs({ counts }: TaskFilterTabsProps) {
+  const filter = useTaskFilterStore(state => state.filter);
+  const setFilter = useTaskFilterStore(state => state.setFilter);
+
+  return (
+    <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
+      {filterOptions.map((option) => (
+        <button
+          key={option.value}
+          onClick={() => setFilter(option.value)}
+          className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+            filter === option.value
+              ? 'bg-white text-gray-900 shadow-sm'
+              : 'text-gray-600 hover:text-gray-900'
+          }`}
+        >
+          {option.label}
+          <span className="ml-1 text-xs text-gray-400">
+            ({counts[option.value]})
+          </span>
+        </button>
+      ))}
+    </div>
+  );
+}
+```
+
 ---
 
 ## 7-6. Zustand の永続化（persist）
 
 ```tsx
+// src/stores/settings-store.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+
+type Theme = 'light' | 'dark';
+
+type SettingsState = {
+  theme: Theme;
+  language: string;
+  setTheme: (theme: Theme) => void;
+  setLanguage: (lang: string) => void;
+};
 
 // localStorageに自動保存・復元
 export const useSettingsStore = create<SettingsState>()(
   persist(
     (set) => ({
-      theme: 'light' as Theme,
+      theme: 'light',
       language: 'ja',
-      setTheme: (theme: Theme) => set({ theme }),
-      setLanguage: (lang: string) => set({ language: lang }),
+      setTheme: (theme) => set({ theme }),
+      setLanguage: (lang) => set({ language: lang }),
     }),
     {
       name: 'taskflow-settings', // localStorageのキー名

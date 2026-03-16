@@ -458,6 +458,24 @@ export function TaskListPage() {
 }
 ```
 
+### App.tsxの更新
+
+第1章ではApp.tsxにダッシュボードUIを直書きしていましたが、TaskListPageを表示するように変更します:
+
+```tsx
+// src/app/App.tsx
+import { MainLayout } from '@/components/layout/MainLayout';
+import { TaskListPage } from '@/features/tasks/components/TaskListPage';
+
+export function App() {
+  return (
+    <MainLayout>
+      <TaskListPage />
+    </MainLayout>
+  );
+}
+```
+
 ---
 
 ## 2-6. State設計のコツ
