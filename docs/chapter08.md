@@ -159,10 +159,16 @@ const ExpensiveChild = React.memo(({ onClick }: { onClick: () => void }) => {
 });
 ```
 
-### 実践的な使用例
+### 実践: useTaskActions カスタムフック
 
 ```tsx
-function useTaskActions() {
+// src/features/tasks/hooks/useTaskActions.ts
+import { useCallback } from 'react';
+import { useUpdateTask, useDeleteTask } from '../api/task-mutations';
+import { useToastStore } from '@/stores/toast-store';
+import type { TaskStatus } from '../types';
+
+export function useTaskActions() {
   const updateTask = useUpdateTask();
   const deleteTask = useDeleteTask();
   const addToast = useToastStore(state => state.addToast);
@@ -192,26 +198,56 @@ function useTaskActions() {
 
 ```tsx
 import { useId } from 'react';
+```
 
-function FormField({ label, ...props }: { label: string } & React.InputHTMLAttributes<HTMLInputElement>) {
-  const id = useId(); // 例: ':r1:', ':r2:' ... サーバー/クライアントで一致
+### FormFieldの更新（useId追加）
+
+第5章で作成したFormFieldにuseIdを追加して、labelとchildren内の入力要素を正しく紐づけます:
+
+```tsx
+// src/components/ui/FormField.tsx（更新）
+import { useId } from 'react';
+import type { FieldError } from 'react-hook-form';
+
+type FormFieldProps = {
+  label: string;
+  error?: FieldError;
+  children: React.ReactNode;
+};
+
+export function FormField({ label, error, children }: FormFieldProps) {
+  const id = useId(); // 例: ':r1:', ':r2:' ... SSRでもクライアントと一致
 
   return (
     <div>
-      <label htmlFor={id} className="block text-sm font-medium">
+      <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">
         {label}
       </label>
-      <input id={id} {...props} className="mt-1 border rounded px-3 py-2" />
+      {/* childrenにidを渡すためにラップ */}
+      <div id={`${id}-field`}>
+        {children}
+      </div>
+      {error && (
+        <p className="text-red-500 text-sm mt-1">{error.message}</p>
+      )}
     </div>
   );
 }
+```
 
+### useIdの基本的な使い方
+
+```tsx
 // 複数フィールドがあっても一意なIDが自動生成される
 function MyForm() {
   return (
     <form>
-      <FormField label="名前" type="text" />    {/* id=":r1:" */}
-      <FormField label="メール" type="email" /> {/* id=":r2:" */}
+      <FormField label="名前">
+        <input type="text" />    {/* 親のid=":r1:" */}
+      </FormField>
+      <FormField label="メール">
+        <input type="email" /> {/* 親のid=":r2:" */}
+      </FormField>
     </form>
   );
 }
@@ -423,6 +459,10 @@ function ResponsiveLayout() {
 
 ```tsx
 // src/features/tasks/hooks/useTaskListWithFilter.ts
+import { useMemo } from 'react';
+import { useTaskList } from '../api/task-queries';
+import { useTaskFilterStore } from '../stores/task-filter-store';
+
 export function useTaskListWithFilter() {
   const { data: tasks = [], isLoading, isError } = useTaskList();
   const filter = useTaskFilterStore(state => state.filter);
@@ -449,6 +489,8 @@ export function useTaskListWithFilter() {
 
 ```tsx
 // src/hooks/useMediaQuery.ts
+import { useState, useEffect } from 'react';
+
 export function useMediaQuery(query: string): boolean {
   const [matches, setMatches] = useState(() =>
     window.matchMedia(query).matches
@@ -476,6 +518,8 @@ function Sidebar() {
 
 ```tsx
 // src/hooks/useDebounce.ts
+import { useState, useEffect } from 'react';
+
 export function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState(value);
 

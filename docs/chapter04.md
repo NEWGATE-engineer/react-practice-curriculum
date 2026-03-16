@@ -315,8 +315,20 @@ function TaskListPage() {
 
 ## 4-5. ネストされたルートとレイアウト
 
+4-2のフラットなルーティングを、ネスト構造にリファクタリングします。
+タスク関連のページにはTaskLayoutという共通レイアウトを追加します:
+
 ```tsx
-// 複数階層のルーティング
+// src/app/router.tsx（ネスト版に更新）
+import { createBrowserRouter } from 'react-router-dom';
+import { RootLayout } from '@/components/layout/RootLayout';
+import { DashboardPage } from '@/features/dashboard/components/DashboardPage';
+import { TaskListPage } from '@/features/tasks/components/TaskListPage';
+import { TaskDetailPage } from '@/features/tasks/components/TaskDetailPage';
+import { TaskLayout } from '@/features/tasks/components/TaskLayout';
+import { ProjectListPage } from '@/features/projects/components/ProjectListPage';
+import { NotFoundPage } from '@/components/feedback/NotFoundPage';
+
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -328,19 +340,12 @@ export const router = createBrowserRouter([
         // タスク関連ページ共通のレイアウト
         element: <TaskLayout />,
         children: [
-          { index: true, element: <TaskListPage /> },     // /tasks
-          { path: ':taskId', element: <TaskDetailPage /> }, // /tasks/123
-          { path: 'new', element: <TaskCreatePage /> },    // /tasks/new
+          { index: true, element: <TaskListPage /> },       // /tasks
+          { path: ':taskId', element: <TaskDetailPage /> },  // /tasks/123
         ],
       },
-      {
-        path: 'projects',
-        element: <ProjectLayout />,
-        children: [
-          { index: true, element: <ProjectListPage /> },
-          { path: ':projectId', element: <ProjectDetailPage /> },
-        ],
-      },
+      { path: 'projects', element: <ProjectListPage /> },   // /projects
+      { path: '*', element: <NotFoundPage /> },
     ],
   },
 ]);

@@ -211,7 +211,38 @@ function TaskCreateForm() {
 
 ---
 
-## 5-3. Zodによるスキーマバリデーション
+## 5-3. Zodスキーマファイルの作成
+
+まず、バリデーションスキーマと型定義を専用ファイルに作成します:
+
+```tsx
+// src/features/tasks/types/schema.ts
+import { z } from 'zod';
+
+// Zodスキーマ定義（Laravelの FormRequest::rules() に相当）
+export const taskFormSchema = z.object({
+  title: z
+    .string()
+    .min(1, 'タイトルは必須です')
+    .max(100, '100文字以内で入力してください'),
+  description: z
+    .string()
+    .max(500, '500文字以内で入力してください')
+    .default(''),
+  priority: z.enum(['low', 'medium', 'high']),
+  dueDate: z
+    .string()
+    .optional()
+    .refine(
+      (val) => !val || !isNaN(Date.parse(val)),
+      '有効な日付を入力してください'
+    ),
+});
+
+// スキーマから型を自動生成（手動で型定義する必要がない）
+export type TaskFormData = z.infer<typeof taskFormSchema>;
+// → { title: string; description: string; priority: 'low' | 'medium' | 'high'; dueDate?: string; }
+```
 
 ### なぜZod？
 
@@ -394,37 +425,75 @@ Input.displayName = 'Input';
 > カスタムコンポーネントに `ref` を渡すには `forwardRef` が必要です。
 > （第8章で詳しく解説します）
 
-### 使用例（リファクタリング後）
+### 完成版: TaskCreateForm（FormField + Input + Zod）
 
 ```tsx
-function TaskCreateForm() {
-  const { register, handleSubmit, formState: { errors } } = useForm<TaskFormData>({
+// src/features/tasks/components/TaskCreateForm.tsx
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { taskFormSchema, type TaskFormData } from '../types/schema';
+import { FormField } from '@/components/ui/FormField';
+import { Input } from '@/components/ui/Input';
+import { Button } from '@/components/ui/Button';
+
+type TaskCreateFormProps = {
+  onSubmit: (data: TaskFormData) => void;
+};
+
+export function TaskCreateForm({ onSubmit }: TaskCreateFormProps) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<TaskFormData>({
     resolver: zodResolver(taskFormSchema),
+    defaultValues: {
+      title: '',
+      description: '',
+      priority: 'medium',
+      dueDate: '',
+    },
   });
 
+  const handleFormSubmit = async (data: TaskFormData) => {
+    onSubmit(data);
+    reset();
+  };
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
       <FormField label="タイトル" error={errors.title}>
-        <Input {...register('title')} hasError={!!errors.title} />
+        <Input {...register('title')} hasError={!!errors.title} placeholder="タスク名を入力" />
       </FormField>
 
       <FormField label="説明" error={errors.description}>
-        <textarea {...register('description')} rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+        <textarea
+          {...register('description')}
+          rows={3}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="タスクの説明（任意）"
+        />
       </FormField>
 
       <FormField label="優先度" error={errors.priority}>
-        <select {...register('priority')}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg">
+        <select
+          {...register('priority')}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+        >
           <option value="low">低</option>
           <option value="medium">中</option>
           <option value="high">高</option>
         </select>
       </FormField>
 
-      <button type="submit" className="w-full py-2 bg-blue-600 text-white rounded-lg">
-        タスクを作成
-      </button>
+      <FormField label="期限" error={errors.dueDate}>
+        <Input type="date" {...register('dueDate')} hasError={!!errors.dueDate} />
+      </FormField>
+
+      <Button variant="primary" disabled={isSubmitting}>
+        {isSubmitting ? '作成中...' : 'タスクを作成'}
+      </Button>
     </form>
   );
 }
@@ -440,6 +509,8 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { taskFormSchema, type TaskFormData } from '../types/schema';
+import { FormField } from '@/components/ui/FormField';
+import { Input } from '@/components/ui/Input';
 import type { Task } from '../types';
 
 type TaskEditFormProps = {
@@ -476,24 +547,45 @@ export function TaskEditForm({ task, onSubmit, onCancel }: TaskEditFormProps) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      {/* フォームフィールド（TaskCreateFormと同じ構成） */}
       <FormField label="タイトル" error={errors.title}>
         <Input {...register('title')} hasError={!!errors.title} />
       </FormField>
-      {/* ... */}
+
+      <FormField label="説明" error={errors.description}>
+        <textarea
+          {...register('description')}
+          rows={3}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </FormField>
+
+      <FormField label="優先度" error={errors.priority}>
+        <select
+          {...register('priority')}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+        >
+          <option value="low">低</option>
+          <option value="medium">中</option>
+          <option value="high">高</option>
+        </select>
+      </FormField>
+
+      <FormField label="期限" error={errors.dueDate}>
+        <Input type="date" {...register('dueDate')} hasError={!!errors.dueDate} />
+      </FormField>
 
       <div className="flex gap-3">
         <button
           type="button"
           onClick={onCancel}
-          className="flex-1 py-2 border border-gray-300 rounded-lg"
+          className="flex-1 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
         >
           キャンセル
         </button>
         <button
           type="submit"
           disabled={isSubmitting || !isDirty}
-          className="flex-1 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50"
+          className="flex-1 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50 hover:bg-blue-700"
         >
           {isSubmitting ? '保存中...' : '保存'}
         </button>
