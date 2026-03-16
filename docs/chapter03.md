@@ -563,6 +563,124 @@ function TaskPage() {
 
 ---
 
+## 3-6. 実践: TaskListPageを更新して全機能を統合
+
+第2章で作成したTaskListPageに、検索・フィルタ・モーダル・ローカルストレージ保存を統合します:
+
+```tsx
+// src/features/tasks/components/TaskListPage.tsx
+import { useState } from 'react';
+import { TaskCard } from './TaskCard';
+import { TaskAddForm } from './TaskAddForm';
+import { TaskSearchBar } from './TaskSearchBar';
+import { TaskFilterTabs } from './TaskFilterTabs';
+import { TaskDetailModal } from './TaskDetailModal';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import type { Task, TaskStatus } from '../types';
+
+// 仮データ
+const initialTasks: Task[] = [
+  {
+    id: '1',
+    title: 'プロジェクト計画書を作成',
+    description: 'スコープと期限を決める',
+    status: 'todo',
+    createdAt: '2025-01-01',
+  },
+  {
+    id: '2',
+    title: 'デザインカンプを確認',
+    description: 'Figmaで共有されたデザインをレビュー',
+    status: 'in_progress',
+    createdAt: '2025-01-02',
+  },
+  {
+    id: '3',
+    title: '開発環境構築',
+    description: 'Docker + Viteの環境を整備',
+    status: 'done',
+    createdAt: '2025-01-03',
+  },
+];
+
+export function TaskListPage() {
+  // useLocalStorageでタスクを永続化（第2章のuseStateから変更）
+  const [tasks, setTasks] = useLocalStorage<Task[]>('taskflow-tasks', initialTasks);
+  const [filter, setFilter] = useState<TaskStatus | 'all'>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+
+  // フィルタリング
+  const filteredTasks = tasks
+    .filter(t => filter === 'all' || t.status === filter)
+    .filter(t =>
+      t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      t.description.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+  // 各ステータスのカウント
+  const counts = {
+    all: tasks.length,
+    todo: tasks.filter(t => t.status === 'todo').length,
+    in_progress: tasks.filter(t => t.status === 'in_progress').length,
+    done: tasks.filter(t => t.status === 'done').length,
+  };
+
+  const handleStatusChange = (id: string, newStatus: TaskStatus) => {
+    setTasks(prev =>
+      prev.map(task =>
+        task.id === id ? { ...task, status: newStatus } : task
+      )
+    );
+  };
+
+  const handleAdd = (title: string, description: string) => {
+    const newTask: Task = {
+      id: Date.now().toString(),
+      title,
+      description,
+      status: 'todo',
+      createdAt: new Date().toISOString().split('T')[0],
+    };
+    setTasks(prev => [newTask, ...prev]);
+  };
+
+  return (
+    <div>
+      <h2 className="text-2xl font-bold text-gray-900 mb-6">タスク一覧</h2>
+
+      <div className="space-y-4 mb-6">
+        <TaskSearchBar value={searchQuery} onChange={setSearchQuery} />
+        <TaskFilterTabs current={filter} onChange={setFilter} counts={counts} />
+        <TaskAddForm onAdd={handleAdd} />
+      </div>
+
+      <div className="space-y-3">
+        {filteredTasks.length === 0 ? (
+          <p className="text-gray-500 text-center py-8">
+            タスクがありません。
+          </p>
+        ) : (
+          filteredTasks.map(task => (
+            <div key={task.id} onClick={() => setSelectedTask(task)} className="cursor-pointer">
+              <TaskCard task={task} onStatusChange={handleStatusChange} />
+            </div>
+          ))
+        )}
+      </div>
+
+      <TaskDetailModal
+        task={selectedTask}
+        isOpen={!!selectedTask}
+        onClose={() => setSelectedTask(null)}
+      />
+    </div>
+  );
+}
+```
+
+---
+
 ## 章末チェックリスト
 
 - [ ] useEffectの3パターン（マウント時、依存値変更時、毎回）を理解している

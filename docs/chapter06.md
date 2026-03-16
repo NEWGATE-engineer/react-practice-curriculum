@@ -97,7 +97,30 @@ apiClient.interceptors.response.use(
 
 ---
 
-## 6-3. モックAPIの作成
+## 6-3. 型定義の更新とモックAPIの作成
+
+### Task型にpriority, dueDateを追加
+
+API連携に合わせて、第2章で作成したTask型を拡張します:
+
+```tsx
+// src/features/tasks/types/index.ts（更新）
+export type TaskStatus = 'todo' | 'in_progress' | 'done';
+
+export type TaskPriority = 'low' | 'medium' | 'high';
+
+export type Task = {
+  id: string;
+  title: string;
+  description: string;
+  status: TaskStatus;
+  priority: TaskPriority;       // 追加
+  dueDate: string | null;       // 追加
+  createdAt: string;
+};
+```
+
+### モックAPIの作成
 
 実際のLaravel APIがなくても開発を進められるように、
 モックデータとモックAPI関数を用意します:
