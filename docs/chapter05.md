@@ -17,7 +17,7 @@
 4. `src/components/ui/Input.tsx` 作成 — 汎用Inputコンポーネント（5-4）
 5. `src/features/tasks/components/TaskCreateForm.tsx` 作成 ※schema, FormField, Inputに依存（5-4）
 6. `src/features/tasks/components/TaskEditForm.tsx` 作成 ※schema, FormField, Inputに依存（5-5）
-7. 既存ページコンポーネントにフォームを統合
+7. `src/features/tasks/components/TaskListPage.tsx` 更新 — TaskAddFormをTaskCreateFormに置き換え（5-6）
 
 ---
 
@@ -178,8 +178,7 @@ export const taskFormSchema = z.object({
     .max(100, '100文字以内で入力してください'),
   description: z
     .string()
-    .max(500, '500文字以内で入力してください')
-    .default(''),
+    .max(500, '500文字以内で入力してください'),
 });
 
 // スキーマから型を自動生成（手動で型定義する必要がない）
@@ -210,7 +209,7 @@ public function messages() {
 // Zod（上記のLaravelルールとほぼ1対1で対応）
 const taskFormSchema = z.object({
   title:       z.string().min(1, 'タイトルは必須です').max(100, '100文字以内'),
-  description: z.string().max(500).default(''),
+  description: z.string().max(500),
 });
 ```
 
@@ -348,6 +347,7 @@ export function TaskCreateForm({ onSubmit }: TaskCreateFormProps) {
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
       <FormField label="タイトル" error={errors.title}>
+        {/* !! （二重否定） !!errors.titleは値があれば true、なければfalseになります */}
         <Input {...register('title')} hasError={!!errors.title} placeholder="タスク名を入力" />
       </FormField>
 
@@ -447,7 +447,107 @@ export function TaskEditForm({ task, onSubmit, onCancel }: TaskEditFormProps) {
 
 ---
 
-## 5-6. 高度なZodパターン（参考）
+## 5-6. TaskListPageにフォームを組み込む
+
+chapter03で作った簡易的な `TaskAddForm` を、RHF+Zodバリデーション付きの `TaskCreateForm` に置き換えます。
+
+### TaskListPage を更新
+
+```tsx
+// src/features/tasks/components/TaskListPage.tsx
+import { useState } from 'react';
+import type { Task, TaskStatus } from '../types';
+import type { TaskFormData } from '../types/schema';
+import { TaskCreateForm } from './TaskCreateForm';
+import { TaskCard } from './TaskCard';
+
+// 仮データ
+const initialTasks: Task[] = [
+  {
+    id: '1',
+    title: 'プロジェクト計画書を作成',
+    description: 'スコープと期限を決める',
+    status: 'todo',
+    createdAt: '2025-01-01',
+  },
+  {
+    id: '2',
+    title: 'デザインカンプを確認',
+    description: 'Figmaで共有されたデザインをレビュー',
+    status: 'in_progress',
+    createdAt: '2025-01-02',
+  },
+  {
+    id: '3',
+    title: '開発環境構築',
+    description: 'Docker + Viteの環境を整備',
+    status: 'done',
+    createdAt: '2025-01-03',
+  },
+];
+
+export function TaskListPage() {
+  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+
+  const handleStatusChange = (id: string, newStatus: TaskStatus) => {
+    setTasks(prev =>
+      prev.map(task =>
+        task.id === id ? { ...task, status: newStatus } : task
+      )
+    );
+  };
+
+  // TaskFormData を受け取って Task に変換して追加
+  const handleCreate = (data: TaskFormData) => {
+    const newTask: Task = {
+      id: Date.now().toString(),
+      title: data.title,
+      description: data.description,
+      status: 'todo',
+      createdAt: new Date().toISOString().split('T')[0],
+    };
+    setTasks(prev => [newTask, ...prev]);
+  };
+
+  return (
+    <div>
+      <h2 className="text-2xl font-bold text-gray-900 mb-6">タスク一覧</h2>
+
+      <div className="mb-6">
+        <TaskCreateForm onSubmit={handleCreate} />
+      </div>
+
+      <div className="space-y-3">
+        {tasks.length === 0 ? (
+          <p className="text-gray-500 text-center py-8">
+            タスクがありません。最初のタスクを追加しましょう！
+          </p>
+        ) : (
+          tasks.map(task => (
+            <TaskCard
+              key={task.id}
+              task={task}
+              onStatusChange={handleStatusChange}
+            />
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+```
+
+### 変更ポイント
+
+- `TaskAddForm` → `TaskCreateForm` に置き換え
+- `handleAdd(title, description)` → `handleCreate(data: TaskFormData)` に変更（Zodでバリデーション済みのデータを受け取る）
+- タイトルを空のまま「タスクを作成」ボタンを押すと、バリデーションエラーが表示されることを確認しましょう
+
+> **注意:** `TaskAddForm` は今後使わないので、ファイルを削除しても構いません。
+
+---
+
+## 5-7. 高度なZodパターン（参考）
 
 以下は今後の実装で使えるパターンです。この章では実装しませんが、知っておくと便利です。
 
@@ -490,6 +590,7 @@ const projectFormSchema = z.object({
 - [ ] zodResolverでRHFとZodを連携できる
 - [ ] z.inferでスキーマから型を自動生成できる
 - [ ] 再利用可能なFormField/Inputコンポーネントを作成できた
+- [ ] TaskListPageにTaskCreateFormを組み込み、バリデーションエラーが表示されることを確認できた
 - [ ] 作成フォームと編集フォームの両方が動作する
 - [ ] isDirty, isSubmittingなどのフォーム状態を活用できる
 - [ ] Laravelのバリデーションとの類似性を理解している
