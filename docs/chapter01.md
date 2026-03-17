@@ -251,12 +251,13 @@ LaravelのBladeコンポーネント(`<x-button>`)と同じ考え方です。
 type ButtonProps = {
   children: React.ReactNode;  // ボタンの中身（テキストや要素）
   variant?: 'primary' | 'secondary' | 'danger';  // ?はオプショナル
+  disabled?: boolean;
   onClick?: () => void;
 };
 
-export function Button({ children, variant = 'primary', onClick }: ButtonProps) {
+export function Button({ children, variant = 'primary', disabled, onClick }: ButtonProps) {
   // variantに応じたスタイルを切り替え
-  const baseStyles = 'px-4 py-2 rounded-lg font-medium transition-colors';
+  const baseStyles = 'px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50';
   const variantStyles = {
     primary: 'bg-blue-600 text-white hover:bg-blue-700',
     secondary: 'bg-gray-200 text-gray-800 hover:bg-gray-300',
@@ -266,6 +267,7 @@ export function Button({ children, variant = 'primary', onClick }: ButtonProps) 
   return (
     <button
       className={`${baseStyles} ${variantStyles[variant]}`}
+      disabled={disabled}
       onClick={onClick}
     >
       {children}
