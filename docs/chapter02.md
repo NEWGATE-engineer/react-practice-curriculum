@@ -35,6 +35,7 @@ const [count, setCount] = useState(0);
 ### 基本構文
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 import { useState } from 'react';
 
 function Counter() {
@@ -54,6 +55,7 @@ function Counter() {
 ### TypeScriptでの型指定
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 // 型推論が効く場合（初期値から推論される）
 const [count, setCount] = useState(0);           // number
 const [name, setName] = useState('');             // string
@@ -90,6 +92,7 @@ setCount(prev => prev + 1);
 ### Stateの重要ルール
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 // NG: 直接変更してはいけない（Reactが変更を検知できない）
 const [tasks, setTasks] = useState<Task[]>([]);
 tasks.push(newTask);  // ← これはNG！
@@ -110,6 +113,7 @@ setTasks(prev => [...prev, newTask]); // 関数形式（推奨）
 ### 基本的なイベント
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 function EventExamples() {
   // クリックイベント
   const handleClick = () => {
@@ -173,6 +177,7 @@ $('#btn').on('click', function(e) {
 Bladeの `@if` に相当するReactのパターン:
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 type TaskStatusProps = {
   status: 'todo' | 'in_progress' | 'done';
 };
@@ -216,6 +221,7 @@ function TaskStatus({ status }: TaskStatusProps) {
 LaravelのBladeでの `@foreach` に相当:
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 type Task = {
   id: number;
   title: string;
@@ -483,6 +489,7 @@ export function App() {
 ### 単一責任の原則
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 // NG: 1つのstateに詰め込みすぎ
 const [formData, setFormData] = useState({
   title: '',
@@ -501,6 +508,7 @@ const [error, setError] = useState<string | null>(null);
 ### 派生データはstateにしない
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 // NG: フィルタ結果をstateで持つ（データの二重管理）
 const [tasks, setTasks] = useState<Task[]>([]);
 const [completedTasks, setCompletedTasks] = useState<Task[]>([]);

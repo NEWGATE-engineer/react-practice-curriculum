@@ -216,6 +216,7 @@ export const mockTaskApi = {
 
 素のuseEffect + useStateでAPI呼び出しをすると:
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 // NG: よくある初心者パターン
 function TaskList() {
   const [tasks, setTasks] = useState([]);
@@ -433,6 +434,7 @@ export function useDeleteTask() {
 ### コンポーネントでの使用
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 function TaskCreateButton() {
   const createTask = useCreateTask();
 
@@ -472,6 +474,7 @@ function TaskCreateButton() {
 ユーザー体験を向上させるため、APIの応答を待たずにUIを先に更新:
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 export function useUpdateTaskStatus() {
   const queryClient = useQueryClient();
 
