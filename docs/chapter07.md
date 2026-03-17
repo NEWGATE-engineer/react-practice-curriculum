@@ -54,6 +54,7 @@
 ### Propsバケツリレーとは
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 // NG: テーマをルートから末端まで延々とPropsで渡す
 function App() {
   const [theme, setTheme] = useState('light');
@@ -105,6 +106,7 @@ export function useTheme() {
 ```
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 // 使用側（何階層でもPropsなしでアクセス可能）
 function ThemeToggleButton() {
   const { theme, toggleTheme } = useTheme();
@@ -135,6 +137,7 @@ function ThemeToggleButton() {
 ### useStateの限界
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 // stateが増えると管理が大変
 const [isOpen, setIsOpen] = useState(false);
 const [isLoading, setIsLoading] = useState(false);
@@ -159,6 +162,7 @@ const fetchData = async () => {
 ### useReducer で状態遷移を明示的に管理
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 import { useReducer } from 'react';
 
 // Laravelの Enum / 定数管理 に近い考え方
@@ -272,6 +276,7 @@ export const useTaskFilterStore = create<TaskFilterState>((set) => ({
 ### コンポーネントでの使用
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 function TaskFilterTabs() {
   // 必要な値だけを取り出す（セレクター）
   // → この値が変わった時だけ再レンダリング
@@ -410,6 +415,7 @@ export function ToastContainer() {
 ### API操作とトーストの連携
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 import { useCreateTask } from '@/features/tasks/api/task-mutations';
 import { useToastStore } from '@/stores/toast-store';
 import type { Task } from '@/features/tasks/types';
