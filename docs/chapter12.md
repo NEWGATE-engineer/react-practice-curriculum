@@ -213,6 +213,7 @@ VITE_APP_NAME=TaskFlow
 ```
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 // 使用側
 const apiUrl = import.meta.env.VITE_API_URL;
 const appName = import.meta.env.VITE_APP_NAME;

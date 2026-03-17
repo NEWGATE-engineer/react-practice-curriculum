@@ -65,6 +65,7 @@
 重い計算を毎回のレンダリングで実行するのを避けたい場合:
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 import { useMemo, useState } from 'react';
 import type { Task } from '../types';
 
@@ -98,6 +99,7 @@ function TaskStats({ tasks }: { tasks: Task[] }) {
 ### フィルタリングのメモ化
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 function TaskListPage() {
   const { data: tasks = [] } = useTaskList();
   const filter = useTaskFilterStore(state => state.filter);
@@ -129,6 +131,7 @@ function TaskListPage() {
 ### なぜ必要？
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 function ParentComponent() {
   const [count, setCount] = useState(0);
 
@@ -238,6 +241,7 @@ export function FormField({ label, error, children }: FormFieldProps) {
 ### useIdの基本的な使い方
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 // 複数フィールドがあっても一意なIDが自動生成される
 function MyForm() {
   return (
@@ -264,6 +268,7 @@ function MyForm() {
 重い処理の入力遅延を防ぐ:
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 import { useDeferredValue, useMemo, useState } from 'react';
 
 function TaskSearchPage() {
@@ -306,6 +311,7 @@ function TaskSearchPage() {
 親コンポーネントに公開するAPIを制限する:
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 import { forwardRef, useImperativeHandle, useRef } from 'react';
 
 // 公開するAPIの型
@@ -352,6 +358,7 @@ function ParentComponent() {
 ## 8-7. useLayoutEffect — DOM更新直後の同期処理
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 import { useLayoutEffect, useRef, useState } from 'react';
 
 function Tooltip({ children, text }: { children: React.ReactNode; text: string }) {
@@ -388,6 +395,7 @@ function Tooltip({ children, text }: { children: React.ReactNode; text: string }
 ## 8-8. useDebugValue — DevToolsでのデバッグ表示
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 import { useDebugValue } from 'react';
 
 function useOnlineStatus() {
@@ -418,6 +426,7 @@ function useOnlineStatus() {
 React外部の値をReactのレンダリングサイクルに同期:
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 import { useSyncExternalStore } from 'react';
 
 // ウィンドウサイズの購読
@@ -551,6 +560,7 @@ function SearchInput() {
 ## 8-11. Hookのルール（重要）
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 // ルール1: トップレベルでのみ呼び出す
 // NG:
 if (isLoggedIn) {
