@@ -12,10 +12,10 @@
 ## 作業順序
 
 1. `react-hook-form`, `zod`, `@hookform/resolvers` をインストール（5-1）
-2. `src/features/tasks/types/schema.ts` 作成 — Zodスキーマと型定義（依存なし）（5-3）
-3. `src/components/ui/FormField.tsx` 作成 — 汎用フォームフィールド（依存なし）（5-4）
-4. `src/components/ui/Input.tsx` 作成 — 汎用Inputコンポーネント（依存なし）（5-4）
-5. `src/features/tasks/components/TaskCreateForm.tsx` 作成 ※schema, FormField, Inputに依存（5-2, 5-3）
+2. `src/features/tasks/types/schema.ts` 作成 — Zodスキーマと型定義（5-3）
+3. `src/components/ui/FormField.tsx` 作成 — 汎用フォームフィールド（5-4）
+4. `src/components/ui/Input.tsx` 作成 — 汎用Inputコンポーネント（5-4）
+5. `src/features/tasks/components/TaskCreateForm.tsx` 作成 ※schema, FormField, Inputに依存（5-4）
 6. `src/features/tasks/components/TaskEditForm.tsx` 作成 ※schema, FormField, Inputに依存（5-5）
 7. 既存ページコンポーネントにフォームを統合
 
@@ -26,12 +26,12 @@
 ### 素のReactでのフォーム管理の課題
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
+
 // 素のReact: 入力フィールドごとにstateが必要
 function TaskForm() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [priority, setPriority] = useState('medium');
-  const [dueDate, setDueDate] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // フィールドが増えるたびにstateが増える...
@@ -52,7 +52,8 @@ function TaskForm() {
 ### React Hook Form: シンプルかつ高性能
 
 ```tsx
-// React Hook Form: registerで紐づけるだけ
+// ※ 概念説明用コード（ファイルには書きません）
+
 import { useForm } from 'react-hook-form';
 
 function TaskForm() {
@@ -94,22 +95,23 @@ npm install react-hook-form zod @hookform/resolvers
 
 ## 5-2. React Hook Form の基本
 
-### 基本的な使い方（TypeScript版）
+### 主要APIの説明
+
+React Hook Formの `useForm` が返す主要なAPIを理解しましょう:
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
+
 import { useForm } from 'react-hook-form';
 
-// フォームのデータ型を定義
-type TaskFormData = {
+type FormData = {
   title: string;
   description: string;
-  priority: 'low' | 'medium' | 'high';
-  dueDate: string;
 };
 
-function TaskCreateForm() {
+function ExampleForm() {
   const {
-    register,     // input要素をフォームに登録する関数
+    register,      // input要素をフォームに登録する関数
     handleSubmit,  // フォーム送信時のラッパー（バリデーション後に実行）
     formState: {
       errors,       // バリデーションエラー
@@ -119,101 +121,50 @@ function TaskCreateForm() {
     reset,         // フォームをリセット
     watch,         // 値の変更を監視
     setValue,      // プログラムから値を設定
-  } = useForm<TaskFormData>({
+  } = useForm<FormData>({
     defaultValues: {
       title: '',
       description: '',
-      priority: 'medium',
-      dueDate: '',
     },
   });
 
-  const onSubmit = async (data: TaskFormData) => {
-    console.log('送信データ:', data);
-    // API呼び出し等
-    reset(); // 送信後にフォームリセット
-  };
-
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      {/* タイトル */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          タイトル
-        </label>
-        <input
-          {...register('title', {
-            required: 'タイトルは必須です',
-            maxLength: { value: 100, message: '100文字以内で入力してください' },
-          })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-        />
-        {errors.title && (
-          <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>
-        )}
-      </div>
+    <form onSubmit={handleSubmit((data) => console.log(data))}>
+      {/* registerでinput要素をフォームに登録 */}
+      <input {...register('title', { required: 'タイトルは必須です' })} />
+      {errors.title && <p>{errors.title.message}</p>}
 
-      {/* 説明 */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          説明
-        </label>
-        <textarea
-          {...register('description', {
-            maxLength: { value: 500, message: '500文字以内で入力してください' },
-          })}
-          rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-        />
-        {errors.description && (
-          <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>
-        )}
-      </div>
+      <textarea {...register('description')} />
 
-      {/* 優先度 */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          優先度
-        </label>
-        <select
-          {...register('priority')}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-        >
-          <option value="low">低</option>
-          <option value="medium">中</option>
-          <option value="high">高</option>
-        </select>
-      </div>
-
-      {/* 期限 */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          期限
-        </label>
-        <input
-          type="date"
-          {...register('dueDate')}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-        />
-      </div>
-
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-      >
-        {isSubmitting ? '送信中...' : 'タスクを作成'}
-      </button>
+      <button type="submit" disabled={isSubmitting}>送信</button>
     </form>
   );
 }
 ```
 
+### ポイント
+
+- `register('fieldName')` でinput要素をフォームに登録（`name`, `ref`, `onChange`, `onBlur` を自動付与）
+- `handleSubmit` はバリデーションを通過した場合のみコールバックを実行
+- `errors` オブジェクトにフィールドごとのエラーメッセージが格納される
+- `register` の第2引数にバリデーションルールを直接書くこともできるが、次のセクションで紹介するZodスキーマに集約するのがベストプラクティス
+
 ---
 
 ## 5-3. Zodスキーマファイルの作成
 
-まず、バリデーションスキーマと型定義を専用ファイルに作成します:
+バリデーションルールを `register` に直接書く代わりに、**Zodスキーマ**として独立ファイルに定義します。
+
+### なぜZod？
+
+- バリデーションルールを1箇所にまとめられる
+- TypeScriptの型を自動生成できる（型とバリデーションの二重管理が不要）
+- 再利用・テストが容易
+
+### スキーマファイルの作成
+
+> **注意:** この章の時点では Task型に `priority`/`dueDate` はまだありません（第6章で追加）。
+> フォームで扱うフィールドは `title` と `description` のみです。
 
 ```tsx
 // src/features/tasks/types/schema.ts
@@ -229,58 +180,11 @@ export const taskFormSchema = z.object({
     .string()
     .max(500, '500文字以内で入力してください')
     .default(''),
-  priority: z.enum(['low', 'medium', 'high']),
-  dueDate: z
-    .string()
-    .optional()
-    .refine(
-      (val) => !val || !isNaN(Date.parse(val)),
-      '有効な日付を入力してください'
-    ),
 });
 
 // スキーマから型を自動生成（手動で型定義する必要がない）
 export type TaskFormData = z.infer<typeof taskFormSchema>;
-// → { title: string; description: string; priority: 'low' | 'medium' | 'high'; dueDate?: string; }
-```
-
-### なぜZod？
-
-React Hook Formの `register` に直接ルールを書くこともできますが、
-**Zodスキーマ**を使うと:
-- バリデーションルールを1箇所にまとめられる
-- TypeScriptの型を自動生成できる（型とバリデーションの二重管理が不要）
-- 再利用・テストが容易
-
-### 基本構文
-
-```tsx
-import { z } from 'zod';
-
-// スキーマ定義（Laravelの rules() に相当）
-const taskFormSchema = z.object({
-  title: z
-    .string()
-    .min(1, 'タイトルは必須です')           // required
-    .max(100, '100文字以内で入力してください'), // max:100
-  description: z
-    .string()
-    .max(500, '500文字以内で入力してください')
-    .optional()                              // nullable
-    .default(''),
-  priority: z.enum(['low', 'medium', 'high']),
-  dueDate: z
-    .string()
-    .optional()
-    .refine(
-      (val) => !val || !isNaN(Date.parse(val)),
-      '有効な日付を入力してください'
-    ),
-});
-
-// スキーマから型を自動生成！（手動で型定義する必要がない）
-type TaskFormData = z.infer<typeof taskFormSchema>;
-// → { title: string; description: string; priority: 'low' | 'medium' | 'high'; dueDate?: string; }
+// → { title: string; description: string; }
 ```
 
 ### Laravelバリデーションとの対比
@@ -291,8 +195,6 @@ public function rules() {
     return [
         'title'       => 'required|string|max:100',
         'description' => 'nullable|string|max:500',
-        'priority'    => 'required|in:low,medium,high',
-        'due_date'    => 'nullable|date',
     ];
 }
 
@@ -308,53 +210,35 @@ public function messages() {
 // Zod（上記のLaravelルールとほぼ1対1で対応）
 const taskFormSchema = z.object({
   title:       z.string().min(1, 'タイトルは必須です').max(100, '100文字以内'),
-  description: z.string().max(500).optional().default(''),
-  priority:    z.enum(['low', 'medium', 'high']),
-  dueDate:     z.string().optional(),
+  description: z.string().max(500).default(''),
 });
 ```
 
 ### React Hook Form と Zod の連携
 
+`@hookform/resolvers` の `zodResolver` を使って、Zodスキーマを React Hook Form に接続します:
+
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
+// 次のセクション（5-4）で実際のファイルとして作成します
+
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-
-const taskFormSchema = z.object({
-  title: z.string().min(1, 'タイトルは必須です').max(100, '100文字以内'),
-  description: z.string().max(500, '500文字以内').default(''),
-  priority: z.enum(['low', 'medium', 'high']),
-  dueDate: z.string().optional(),
-});
-
-type TaskFormData = z.infer<typeof taskFormSchema>;
+import { taskFormSchema, type TaskFormData } from '../types/schema';
 
 function TaskCreateForm() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    reset,
-  } = useForm<TaskFormData>({
+  const { register, handleSubmit, formState: { errors } } = useForm<TaskFormData>({
     resolver: zodResolver(taskFormSchema), // ← Zodスキーマを接続
     defaultValues: {
       title: '',
       description: '',
-      priority: 'medium',
-      dueDate: '',
     },
   });
 
-  const onSubmit = async (data: TaskFormData) => {
-    // dataはZodでバリデーション済み＆型安全
-    console.log(data);
-    reset();
-  };
-
+  // registerにバリデーションルールを書く必要がない
+  // すべてZodスキーマ側に集約されている
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      {/* register するだけ。バリデーションルールはZodスキーマ側に集約 */}
+    <form onSubmit={handleSubmit((data) => console.log(data))}>
       <input {...register('title')} />
       {errors.title && <p className="text-red-500">{errors.title.message}</p>}
       {/* ... */}
@@ -367,7 +251,7 @@ function TaskCreateForm() {
 
 ## 5-4. 再利用可能なフォームコンポーネント
 
-### 汎用Inputコンポーネント
+### 汎用FormFieldコンポーネント
 
 ```tsx
 // src/components/ui/FormField.tsx
@@ -393,6 +277,8 @@ export function FormField({ label, error, children }: FormFieldProps) {
   );
 }
 ```
+
+### 汎用Inputコンポーネント
 
 ```tsx
 // src/components/ui/Input.tsx
@@ -425,7 +311,7 @@ Input.displayName = 'Input';
 > カスタムコンポーネントに `ref` を渡すには `forwardRef` が必要です。
 > （第8章で詳しく解説します）
 
-### 完成版: TaskCreateForm（FormField + Input + Zod）
+### 完成版: TaskCreateForm
 
 ```tsx
 // src/features/tasks/components/TaskCreateForm.tsx
@@ -451,8 +337,6 @@ export function TaskCreateForm({ onSubmit }: TaskCreateFormProps) {
     defaultValues: {
       title: '',
       description: '',
-      priority: 'medium',
-      dueDate: '',
     },
   });
 
@@ -474,21 +358,6 @@ export function TaskCreateForm({ onSubmit }: TaskCreateFormProps) {
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="タスクの説明（任意）"
         />
-      </FormField>
-
-      <FormField label="優先度" error={errors.priority}>
-        <select
-          {...register('priority')}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-        >
-          <option value="low">低</option>
-          <option value="medium">中</option>
-          <option value="high">高</option>
-        </select>
-      </FormField>
-
-      <FormField label="期限" error={errors.dueDate}>
-        <Input type="date" {...register('dueDate')} hasError={!!errors.dueDate} />
       </FormField>
 
       <Button variant="primary" disabled={isSubmitting}>
@@ -530,8 +399,6 @@ export function TaskEditForm({ task, onSubmit, onCancel }: TaskEditFormProps) {
     defaultValues: {
       title: task.title,
       description: task.description,
-      priority: task.priority,
-      dueDate: task.dueDate || '',
     },
   });
 
@@ -540,8 +407,6 @@ export function TaskEditForm({ task, onSubmit, onCancel }: TaskEditFormProps) {
     reset({
       title: task.title,
       description: task.description,
-      priority: task.priority,
-      dueDate: task.dueDate || '',
     });
   }, [task, reset]);
 
@@ -557,21 +422,6 @@ export function TaskEditForm({ task, onSubmit, onCancel }: TaskEditFormProps) {
           rows={3}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-      </FormField>
-
-      <FormField label="優先度" error={errors.priority}>
-        <select
-          {...register('priority')}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-        >
-          <option value="low">低</option>
-          <option value="medium">中</option>
-          <option value="high">高</option>
-        </select>
-      </FormField>
-
-      <FormField label="期限" error={errors.dueDate}>
-        <Input type="date" {...register('dueDate')} hasError={!!errors.dueDate} />
       </FormField>
 
       <div className="flex gap-3">
@@ -597,7 +447,9 @@ export function TaskEditForm({ task, onSubmit, onCancel }: TaskEditFormProps) {
 
 ---
 
-## 5-6. 高度なZodパターン
+## 5-6. 高度なZodパターン（参考）
+
+以下は今後の実装で使えるパターンです。この章では実装しませんが、知っておくと便利です。
 
 ### 条件付きバリデーション
 
@@ -633,7 +485,7 @@ const projectFormSchema = z.object({
 
 ## 章末チェックリスト
 
-- [ ] React Hook Formの基本（register, handleSubmit, errors）を使いこなせる
+- [ ] React Hook Formの基本（register, handleSubmit, errors）を理解できた
 - [ ] Zodでバリデーションスキーマを定義できる
 - [ ] zodResolverでRHFとZodを連携できる
 - [ ] z.inferでスキーマから型を自動生成できる

@@ -37,6 +37,7 @@ Laravel でいうと、ミドルウェアやイベントリスナーのように
 ### 基本構文
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 import { useEffect, useState } from 'react';
 
 function TaskListPage() {
@@ -55,6 +56,7 @@ function TaskListPage() {
 ### 依存配列のパターン
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 // パターン1: マウント時に1回だけ実行
 // → API呼び出し、初期化処理に使う
 useEffect(() => {
@@ -79,6 +81,7 @@ useEffect(() => {
 ### クリーンアップ関数
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 // タイマーやイベントリスナーは、コンポーネントが消える時に解除が必要
 useEffect(() => {
   const timer = setInterval(() => {
@@ -113,6 +116,7 @@ useEffect(() => {
 ### よくある間違い
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 // NG: 無限ループになる
 useEffect(() => {
   setCount(count + 1); // stateを更新 → 再レンダリング → useEffect再実行 → ...
@@ -139,6 +143,7 @@ jQueryでは `$('#input')` でDOM要素を取得しましたが、
 Reactでは `useRef` を使います:
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 import { useRef } from 'react';
 
 function SearchInput() {
@@ -161,6 +166,7 @@ function SearchInput() {
 ### レンダリングをトリガーしない値の保持
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 // useStateとの違い:
 // useState → 値が変わると再レンダリングが発生する
 // useRef   → 値が変わっても再レンダリングしない
@@ -195,6 +201,7 @@ function Timer() {
 ### 前回の値を保持する
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 function usePrevious<T>(value: T): T | undefined {
   const ref = useRef<T | undefined>(undefined);
 
@@ -242,6 +249,7 @@ React:
 ### 分割の実例
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 // NG: 1つのコンポーネントに全部詰め込む
 function TaskPage() {
   const [tasks, setTasks] = useState([]);
@@ -295,6 +303,7 @@ function TaskPage() {
 Laravelの `@yield('content')` / `@section('content')` に相当:
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 // Blade:
 // <x-layout>
 //     <x-slot name="header">ヘッダー</x-slot>

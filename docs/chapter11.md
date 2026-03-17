@@ -53,6 +53,7 @@ class TaskTest extends TestCase
 ```
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 // React: Vitest + React Testing Library
 describe('TaskCreateForm', () => {
   test('タスクを作成できる', async () => {
