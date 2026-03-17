@@ -348,6 +348,7 @@ export function TaskCreateForm({ onSubmit }: TaskCreateFormProps) {
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
       <FormField label="タイトル" error={errors.title}>
+        {/* !! （二重否定） !!errors.titleは値があれば true、なければfalseになります */}
         <Input {...register('title')} hasError={!!errors.title} placeholder="タスク名を入力" />
       </FormField>
 

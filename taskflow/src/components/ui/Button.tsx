@@ -3,10 +3,11 @@ import type React from "react";
 type ButtonProps = {
   children: React.ReactNode; // ボタンの中身（テキストや要素）
   variant?: 'primary' | 'secondary' | 'danger';  // ?はオプショナル
+  disabled?: boolean;
   onClick?: () => void;
 };
 
-export function Button({ children, variant = "primary", onClick }: ButtonProps) {
+export function Button({ children, variant = "primary", disabled, onClick }: ButtonProps) {
   // variantに応じたスタイルを切り替え
   const baseStyles = 'px-4 py-2 rounded-lg font-medium transition-colors';
 
@@ -19,6 +20,7 @@ export function Button({ children, variant = "primary", onClick }: ButtonProps) 
   return (
     <button
       className={`${baseStyles} ${variantStyles[variant]}`}
+      disabled={disabled}
       onClick={onClick}
     >
       {children}
