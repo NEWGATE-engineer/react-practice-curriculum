@@ -224,6 +224,7 @@ export function Sidebar() {
 ### プログラムによるナビゲーション
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 import { useNavigate } from 'react-router-dom';
 
 function TaskCard({ task }: { task: Task }) {
@@ -279,6 +280,7 @@ export function TaskDetailPage() {
 ### クエリパラメータ
 
 ```tsx
+// ※ 概念説明用コード（ファイルには書きません）
 import { useSearchParams } from 'react-router-dom';
 
 function TaskListPage() {
