@@ -1,9 +1,8 @@
-import { useState } from "react";
-import type { Task, TaskStatus } from "../types";
-import { TaskAddForm } from "./TaskAddForm";
-import { TaskCard } from "./TaskCard";
-
-
+import { useState } from 'react';
+import type { Task, TaskStatus } from '../types';
+import type { TaskFormData } from '../types/schema';
+import { TaskCreateForm } from './TaskCreateForm';
+import { TaskCard } from './TaskCard';
 
 // 仮データ
 const initialTasks: Task[] = [
@@ -30,8 +29,6 @@ const initialTasks: Task[] = [
   },
 ];
 
-
-
 export function TaskListPage() {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
@@ -43,15 +40,15 @@ export function TaskListPage() {
     );
   };
 
-  const handleAdd = (title: string, description: string) => {
+  // TaskFormData を受け取って Task に変換して追加
+  const handleCreate = (data: TaskFormData) => {
     const newTask: Task = {
       id: Date.now().toString(),
-      title,
-      description,
+      title: data.title,
+      description: data.description,
       status: 'todo',
       createdAt: new Date().toISOString().split('T')[0],
     };
-
     setTasks(prev => [newTask, ...prev]);
   };
 
@@ -60,7 +57,7 @@ export function TaskListPage() {
       <h2 className="text-2xl font-bold text-gray-900 mb-6">タスク一覧</h2>
 
       <div className="mb-6">
-        <TaskAddForm onAdd={handleAdd} />
+        <TaskCreateForm onSubmit={handleCreate} />
       </div>
 
       <div className="space-y-3">
