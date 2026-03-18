@@ -339,6 +339,7 @@ export function useTaskDetail(taskId: string) {
 // src/features/tasks/components/TaskListPage.tsx
 import { useTaskList } from '../api/task-queries';
 import { TaskCard } from './TaskCard';
+import type { TaskStatus } from '../types';
 
 export function TaskListPage() {
   const { data: tasks, isLoading, isError, error } = useTaskList();
@@ -361,12 +362,21 @@ export function TaskListPage() {
     );
   }
 
+  const handleStatusChange = (id: string, status: TaskStatus) => {
+    // TODO: chapter 6-6 で useMutation に置き換え
+    console.log('status change', id, status);
+  };
+
   return (
     <div>
       <h2 className="text-2xl font-bold mb-6">タスク一覧</h2>
       <div className="space-y-3">
         {tasks?.map(task => (
-          <TaskCard key={task.id} task={task} />
+          <TaskCard
+            key={task.id}
+            task={task}
+            onStatusChange={handleStatusChange}
+          />
         ))}
       </div>
     </div>
