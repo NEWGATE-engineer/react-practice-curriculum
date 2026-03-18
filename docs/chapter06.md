@@ -18,7 +18,7 @@
 5. `@tanstack/react-query`, `@tanstack/react-query-devtools` をインストール（6-4）
 6. `src/lib/query-client.ts` 作成 — QueryClient設定（依存なし）（6-4）
 7. `src/app/providers.tsx` 作成 — QueryClientProvider ※query-clientに依存（6-4）
-8. `src/app/App.tsx` 更新 — Providersで囲む ※providers.tsxに依存（6-4）
+8. `src/App.tsx` 更新 — Providersで囲む ※providers.tsxに依存（6-4）
 9. `src/features/tasks/api/task-queries.ts` 作成 — useQuery フック ※モックAPIに依存（6-5）
 10. `src/features/tasks/api/task-mutations.ts` 作成 — useMutation フック ※モックAPI, queryKeysに依存（6-6）
 11. `src/features/tasks/components/TaskListPage.tsx` 更新 — useQueryでデータ取得に切り替え（6-5）
@@ -283,10 +283,10 @@ export function Providers({ children }: ProvidersProps) {
 ```
 
 ```tsx
-// src/app/App.tsx
+// src/App.tsx（※ ルート直下の App.tsx を更新）
 import { RouterProvider } from 'react-router-dom';
-import { Providers } from './providers';
-import { router } from './router';
+import { Providers } from './app/providers';
+import { router } from './app/router';
 
 export function App() {
   return (
