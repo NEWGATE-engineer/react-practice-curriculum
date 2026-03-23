@@ -17,10 +17,11 @@
 4. `src/stores/ui-store.ts` 作成 — サイドバー開閉状態（依存なし）（7-5）
 5. `src/stores/toast-store.ts` 作成 — トースト通知ストア（依存なし）（7-5）
 6. `src/components/feedback/ToastContainer.tsx` 作成 ※toast-storeに依存（7-5）
-7. `src/components/layout/Sidebar.tsx` 更新 — useUIStoreで開閉管理 ※ui-storeに依存
-8. `src/components/layout/RootLayout.tsx` 更新 — ToastContainerを配置 ※ToastContainerに依存
-9. `src/features/tasks/components/TaskFilterTabs.tsx` 更新 — Zustandストアに切り替え ※task-filter-storeに依存
-10. `src/stores/settings-store.ts` 作成 — persist ミドルウェアでテーマ永続化（7-6）
+7. `src/components/layout/Header.tsx` 更新 — サイドバートグルボタンを追加 ※ui-storeに依存
+8. `src/components/layout/Sidebar.tsx` 更新 — useUIStoreで開閉管理 ※ui-storeに依存
+9. `src/components/layout/RootLayout.tsx` 更新 — ToastContainerを配置 ※ToastContainerに依存
+10. `src/features/tasks/components/TaskFilterTabs.tsx` 更新 — Zustandストアに切り替え ※task-filter-storeに依存
+11. `src/stores/settings-store.ts` 作成 — persist ミドルウェアでテーマ永続化（7-6）
 
 ---
 
@@ -434,6 +435,39 @@ function useCreateTaskWithToast() {
       });
     },
   };
+}
+```
+
+### Headerの更新（サイドバートグルボタンを追加）
+
+Headerにサイドバーの開閉ボタンを追加します:
+
+```tsx
+// src/components/layout/Header.tsx（更新）
+import { useUIStore } from '@/stores/ui-store';
+
+export function Header() {
+  const toggleSidebar = useUIStore(state => state.toggleSidebar);
+
+  return (
+    <header className="bg-white border-b border-gray-200 px-6 py-4">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={toggleSidebar}
+            className="p-1.5 rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+            aria-label="サイドバー切り替え"
+          >
+            ☰
+          </button>
+          <h1 className="text-xl font-bold text-gray-900">TaskFlow</h1>
+        </div>
+        <nav className="flex items-center gap-4">
+          <span className="text-sm text-gray-600">ゲストユーザー</span>
+        </nav>
+      </div>
+    </header>
+  );
 }
 ```
 
