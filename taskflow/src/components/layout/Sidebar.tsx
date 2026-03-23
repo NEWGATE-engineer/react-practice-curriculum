@@ -1,3 +1,4 @@
+import { useUIStore } from "@/stores/ui-store";
 import { NavLink } from "react-router-dom";
 
 const navItems = [
@@ -7,6 +8,10 @@ const navItems = [
 ];
 
 export function Sidebar() {
+  const isSidebarOpen = useUIStore(state => state.isSidebarOpen);
+
+  if (!isSidebarOpen) return null;
+
   return (
     <aside className="w-64 bg-gray-50 border-r border-gray-200 p-4">
       <nav>
